@@ -1,0 +1,6 @@
+{
+   "Lua.workspace.library": [
+      "libs/",
+      "libs/cet-kit/"   
+   ]
+}
