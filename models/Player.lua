@@ -1,7 +1,11 @@
-local Need = require("models/Need")
+local Need = require("models.Need")
 
+--- @class Player
+--- @field needs Need[]
 Player = {}
 
+--- To be called on game init, sets up the empty objects
+--- @return Player
 function Player:new()
    local o = {}
    setmetatable(o, {__index = self})

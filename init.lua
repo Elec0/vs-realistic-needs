@@ -1,8 +1,7 @@
--- local user = require("modules/models/User")
-local Player = require("models/Player")
--- local cron = require("modules/utils/Cron")
--- local observers = require("modules/controllers/Observers")
--- local listeners = require("modules/controllers/Listeners")
+local Player = require("models.Player")
+local Cron = require("modules.utils.Cron")
+local MainController = require("controllers.MainController")
+local GameController = require("controllers.GameController")
 
 VRN = {
     description = "V's Realistic Needs",
@@ -11,9 +10,9 @@ VRN = {
     config = {}
 }
 
--- Notif = require("modules/views/Notification")
--- User = user:new()
 local player = Player:new()
+local main_controller = MainController:new()
+local game_controller = GameController:new()
 
 -- Eating
 -- https://nativedb.red4ext.com/ItemActionsHelper
@@ -33,10 +32,6 @@ local player = Player:new()
 --   == "[Sit]"
 -- See dialogUI.UpdateDialogHubData
 
-function registerForEvent(name, fun)
-    if name == "onInit" then fun() end
-end
-
 function VRN:new()
     registerForEvent("onInit", function()
         player:reset()
@@ -47,19 +42,17 @@ function VRN:new()
         -- observers.init()
         -- listeners.init()
 
-        -- cron.Every(1.0, {tick = 1}, function(_)
-        --     if Player.state.enable then
-        --         Player:getConsumption()
-        --         Player:updateMetabolism()
-        --     end
-        -- end)
+        -- You can switch args & callback ordering, apparently
+        Cron.Every(10.0, { }, function(_)
 
-        print("[Live in Night City] is initialized (v" .. VRN.version .. ")")
+        end)
+
+        print("[V's Realistic Needs] is initialized (v" .. VRN.version .. ")")
     end)
 
-    -- registerForEvent("onUpdate", function(delta)
-    --     cron.Update(delta)
-    -- end)
+    registerForEvent("onUpdate", function(delta)
+        Cron.Update(delta)
+    end)
 
     -- registerHotkey("LiveInNightCity", "Show Needs", function()
     --     Notif.show()

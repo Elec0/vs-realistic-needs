@@ -41,13 +41,13 @@ I don't recommend doing that during a firefight, let me tell you.
 
 ### Hunger
 Stages of hunger, from least to most hungry:
-0. Bloated
-1. Full
-2. Satisfied
-3. Peckish
-4. Hungry
-5. Very Hungry
-6. Starving
+0. Bloated > 100
+1. Full > 80
+2. Satisfied > 60
+3. Peckish > 40
+4. Hungry > 30
+5. Very Hungry > 10
+6. Starving > 0
 
 Food is either a small, medium, or large meal.
 
