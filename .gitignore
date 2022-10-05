@@ -1,13 +1,17 @@
 # Compiled Lua sources
 luac.out
 
+# Cyberpunk files
+*.log
+*.sqlite3
+
+# Lua libraries
+luaunit.lua
+
 # luarocks build files
 *.src.rock
 *.zip
 *.tar.gz
-
-# Lua libraries
-luaunit.lua
 
 # Object files
 *.o

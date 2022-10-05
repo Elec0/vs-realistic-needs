@@ -1,4 +1,4 @@
-local Need = require("models.Need")
+local Need = require("models/Need")
 
 --- @class Player
 --- @field needs Need[]
@@ -10,6 +10,7 @@ function Player:new()
    local o = {}
    setmetatable(o, {__index = self})
 
+   --- @type Need[]
    o.needs = {
       hunger = Need:new(),
       thirst = Need:new(),
@@ -17,6 +18,16 @@ function Player:new()
       cleanliness = Need:new()
    }
    return o
+end
+
+--- Notification that time has passed and we need to update our state
+--- Delta is in seconds
+---@param delta number
+function Player:tick(delta)
+
+   for _, need in pairs(self.needs) do
+      need:decay(delta)
+   end
 end
 
 function Player:reset()

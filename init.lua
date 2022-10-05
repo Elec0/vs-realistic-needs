@@ -1,7 +1,7 @@
-local Player = require("models.Player")
-local Cron = require("modules.utils.Cron")
-local MainController = require("controllers.MainController")
-local GameController = require("controllers.GameController")
+local Player = require("models/Player")
+local Cron = require("libs/cet-kit/Cron")
+local MainController = require("controllers/MainController")
+-- local GameController = require("controllers/GameController")
 
 VRN = {
     description = "V's Realistic Needs",
@@ -12,7 +12,7 @@ VRN = {
 
 local player = Player:new()
 local main_controller = MainController:new()
-local game_controller = GameController:new()
+-- local game_controller = GameController:new()
 
 -- Eating
 -- https://nativedb.red4ext.com/ItemActionsHelper
@@ -42,9 +42,18 @@ function VRN:new()
         -- observers.init()
         -- listeners.init()
 
+        -- GameTime Days, Hours, Minutes, Seconds
+        -- Current time: 71, 7:25:7
+        -- Current time: 71, 14:25:24
+
+        -- Game.GetTimeSystem():GetGameTimeStamp()
+        -- Time in seconds, adds up to GetGameTime as you would expect
+
         -- You can switch args & callback ordering, apparently
         Cron.Every(10.0, { }, function(_)
-
+            local gameTime = Game.GetTimeSystem():GetGameTime()
+            print("Current time: " .. GameTime.Days(gameTime) .. ", " .. GameTime.Hours(gameTime) .. ":" 
+                .. GameTime.Minutes(gameTime) .. ":" .. GameTime.Seconds(gameTime))
         end)
 
         print("[V's Realistic Needs] is initialized (v" .. VRN.version .. ")")
