@@ -1,23 +1,92 @@
-lu = require("libs.luaunit")
-local Player = require("models.Player")
-local Need = require("models.Need")
+local lu = require("libs/luaunit")
+local Player = require("models/Player")
+local Need = require("models/Need")
+local MainController = require("controllers/MainController")
+local Config = require("config/Config")
+local Log = require("utils/log")
 
+--#region TestMainController
+TestMainController = {}
+   function TestMainController:setUp()
+      -- Turn off the logging
+      self.old_log = VLog.log_func
+      VLog.log_func = function () end
+      local p = Player:new()
+      -- Handle defining our variables directly, since we're testing logic and not
+      -- the value of the variables
+      local diff = { 
+         [Player.THIRST] = {
+            decay_rate = 30,
+            stage_table = {["max"] = 110, 100, 80, 60, 40, 30, 10, 0, -1}
+         },
+         [Player.HUNGER] = {
+               decay_rate = 60,
+               stage_table = {["max"] = 110, 100, 80, 60, 40, 30, 10, 0, -1}
+         },
+         [Player.FATIGUE] = {
+               decay_rate = 1,
+               stage_table = {["max"] = 110, 100, 80, 60, 40, 30, 10, 0, -1}
+         },
+         [Player.CLEANLINESS] = {
+               decay_rate = 1,
+               stage_table = {["max"] = 110, 100, 80, 60, 40, 30, 10, 0, -1}
+         }
+      }
+      self.gameTime = 1000
+
+      self.main_c = MainController:new(diff, p, self.gameTime)
+   end
+   function TestMainController:tearDown()
+      VLog.log_func = self.old_log
+   end
+
+   function TestMainController:test_init()
+      lu.assertNotNil(self.main_c.player)
+      lu.assertNotNil(self.main_c.difficulty)
+      lu.assertNotNil(self.main_c.lastUpdateTime)
+   end
+
+   function TestMainController:test_tick()
+      local hunger = { n = self.main_c.player.needs[Player.HUNGER] }
+      hunger["val_old"] = hunger.n.value
+      local thirst = { n = self.main_c.player.needs[Player.THIRST] }
+      thirst["val_old"] = thirst.n.value
+
+      self.gameTime = self.gameTime + 1
+      self.main_c:tick(self.gameTime)
+      
+      lu.assertEquals(hunger.n.value, hunger.val_old - 1, "Test need tick 1 per 1s")
+      lu.assertAlmostEquals(thirst.n.value, thirst.val_old - 0.5, 0.1, "Test need tick 1 per 2s")
+   end
+
+   function TestMainController:test_negative_tick()
+      local n_hunger = self.main_c.player.needs[Player.HUNGER]
+      local val_old = n_hunger.value
+      
+      self.gameTime = self.gameTime - 1
+      self.main_c:tick(self.gameTime)
+      lu.assertEquals(n_hunger.value, val_old, "Test need doesn't change with invalid gameTime")
+   end
+--#endregion
+
+--#region TestPlayer
 TestPlayer = {}
    function TestPlayer:setUp()
       self.player = Player:new()
    end
    function TestPlayer:test_init()
-      lu.assertNotNil(self.player.needs.thirst)
-      lu.assertNotNil(self.player.needs.hunger)
-      lu.assertNotNil(self.player.needs.fatigue)
-      lu.assertNotNil(self.player.needs.cleanliness)
+      lu.assertNotNil(self.player.needs[Player.THIRST])
+      lu.assertNotNil(self.player.needs[Player.HUNGER])
+      lu.assertNotNil(self.player.needs[Player.FATIGUE])
+      lu.assertNotNil(self.player.needs[Player.CLEANLINESS])
    end
--- end of table TestPlayer
+--#endregion TestPlayer
 
-
+--#region TestNeed
 TestNeed = {}
    function TestNeed:setUp()
-      self.need = Need:new()
+      --- @type Need
+      self.need = Need:new(0, 0)
    end
 
    --- Ensure value decay works properly
@@ -63,8 +132,9 @@ TestNeed = {}
       self.need.value = 0
       lu.assertEquals(self.need:get_stage(), 7, "Test Dead")
    end
--- end of table TestNeed
+--#endregion TestNeed
 
+--#region TestLog
 TestLog = {
    backup = {},
    returned = nil
@@ -144,6 +214,10 @@ TestLog = {
       VLog.i("Info format")
       lu.assertEquals(TestLog.returned, "Info format")
    end
+   function TestLog:test_varargs()
+      VLog.level = VLog.LEVELS.INFO
+
+   end
    function TestLog:test_negatives()
       VLog.level = VLog.LEVELS.WARN
 
@@ -166,6 +240,6 @@ TestLog = {
       VLog.level = TestLog.backup.level
       VLog.format = TestLog.backup.format
    end
--- end of table TestLog
+--#endregion TestLog
 
 os.exit(lu.LuaUnit.run())

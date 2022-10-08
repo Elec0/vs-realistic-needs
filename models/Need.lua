@@ -13,13 +13,18 @@ Need = {  }
 
 
 
-function Need:new()
+--- 
+--- @param need_uid number
+--- @param init_value number
+--- @return table
+function Need:new(need_uid, init_value)
    local o = {}
    setmetatable(o, {__index = self})
 
-   o.value = 0
+   o.value = init_value
    o.decay_rate = 0
    o.stage_table = {["max"] = 110, 100, 80, 60, 40, 30, 10, 0, -1}
+   o.uid = need_uid
    return o
 end
 
@@ -37,16 +42,21 @@ end
 --- Given number of seconds, decay the need value.
 --- decay_rate is in negative points per minute.
 --- 
---- Delta is in seconds.
+--- Delta is in seconds and should always be positive
 --- @param delta number
 function Need:decay(delta)
+   if delta < 0 then 
+      Log.w("Need: Invalid delta value of '" .. delta .. "'!")
+      return
+   end
+
    local decay_rate_second = self.decay_rate / 60
    local decay_amt = decay_rate_second * delta
 
    self.value = self.value - decay_amt
 
    if not verify_values(self) then
-      Log.w("VNR: Invalid value '" .. self.value .. "'! Reverting.")
+      Log.w("Invalid value '" .. self.value .. "'! Reverting by " .. decay_amt)
       -- Presumably the previous value was valid
       self.value = self.value + decay_amt
    end

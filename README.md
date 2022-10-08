@@ -88,6 +88,9 @@ Each need drains at different rates, depending on a number of factors.
 [TODO: Put in the base rates and factors]  
 
 ## Todo List
+- [ ] Observe the events needed
+- [ ] Determine base decay rates
+- [ ] Figure out how to add new status effects
 - [ ] What does alcohol do?
 - [ ] Multi-language support
 - [ ] Determine if using stamina depletes needs faster

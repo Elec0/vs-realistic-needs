@@ -57,15 +57,27 @@ end
 
 --- Actually do the logging
 --- @param msg_level level
---- @param msg any
-local function printlog(msg_level, msg)
+--- @param ... any
+local function printlog(msg_level, ...)
    if VLog.level < msg_level then
       return
    end
+   local args = {...}
+   local msg = ""
 
-   if type(msg) ~= "string" then
-      msg = dump(msg)
+   -- If there's nothing to print, output nil
+   if #args == 0 then
+      msg = "nil"
    end
+   for i, v in ipairs(args) do
+      if type(v) ~= "string" then
+         msg = msg .. dump(v)
+      else
+         msg = msg .. v
+      end
+   end
+   
+
    local fmsg = VLog.format
                   :gsub("$L", VLog.LEVEL_NAMES[msg_level])
                   :gsub("$M", msg)
@@ -73,24 +85,24 @@ local function printlog(msg_level, msg)
 end
 
 --- Print a debug log message
---- @param msg any
-function VLog.d(msg)
-   printlog(LEVELS.DEBUG, msg)
+--- @param ... any
+function VLog.d(...)
+   printlog(LEVELS.DEBUG, table.unpack({...}))
 end
 --- Print a info log message
---- @param msg any
-function VLog.i(msg)
-   printlog(LEVELS.INFO, msg)
+--- @param ... any
+function VLog.i(...)
+   printlog(LEVELS.INFO, table.unpack({...}))
 end
 --- Print a warn log message
---- @param msg any
-function VLog.w(msg)
-   printlog(LEVELS.WARN, msg)
+--- @param ... any
+function VLog.w(...)
+   printlog(LEVELS.WARN, table.unpack({...}))
 end
 --- Print a error log message
---- @param msg any
-function VLog.e(msg)
-   printlog(LEVELS.ERROR, msg)
+--- @param ... any
+function VLog.e(...)
+   printlog(LEVELS.ERROR, table.unpack({...}))
 end
 
 return VLog

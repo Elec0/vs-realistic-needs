@@ -2,6 +2,7 @@ local Player = require("models/Player")
 local Cron = require("libs/cet-kit/Cron")
 local MainController = require("controllers/MainController")
 -- local GameController = require("controllers/GameController")
+local Config = require("config/Config")
 
 VRN = {
     description = "V's Realistic Needs",
@@ -11,7 +12,7 @@ VRN = {
 }
 
 local player = Player:new()
-local main_controller = MainController:new()
+local main_controller = nil
 -- local game_controller = GameController:new()
 
 -- Eating
@@ -34,7 +35,10 @@ local main_controller = MainController:new()
 
 function VRN:new()
     registerForEvent("onInit", function()
+        local diff = Config[1]
         player:reset()
+        main_controller = MainController:new(diff, player, Game.GetTimeSystem():GetGameTimeStamp())
+        
 
         -- Status effects: Rested (sleep), Refreshed (shower)
         -- Hydration (drink)
