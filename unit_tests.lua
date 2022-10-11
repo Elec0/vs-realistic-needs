@@ -46,6 +46,16 @@ TestMainController = {}
       lu.assertNotNil(self.main_c.lastUpdateTime)
    end
 
+   --- Test that eating [something] works correctly by decreasing need, etc
+   function TestMainController:test_player_eat()
+      local hunger = self.main_c.player.needs[Player.HUNGER]
+      local val_old = hunger.value
+
+      self.main_c:player_eat({val = 10})
+      lu.assertNotEquals(val_old, hunger.value, "Test eating decreases hunger")
+   end
+
+   --- Test that basic 1t/s and 1t/2s works correctly
    function TestMainController:test_tick()
       local hunger = { n = self.main_c.player.needs[Player.HUNGER] }
       hunger["val_old"] = hunger.n.value
@@ -56,7 +66,7 @@ TestMainController = {}
       self.main_c:tick(self.gameTime)
       
       lu.assertEquals(hunger.n.value, hunger.val_old - 1, "Test need tick 1 per 1s")
-      lu.assertAlmostEquals(thirst.n.value, thirst.val_old - 0.5, 0.1, "Test need tick 1 per 2s")
+      lu.assertAlmostEquals(thirst.n.value, thirst.val_old - 0.5, 0.01, "Test need tick 1 per 2s")
    end
 
    function TestMainController:test_negative_tick()

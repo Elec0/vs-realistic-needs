@@ -44,19 +44,23 @@ end
 
 -- Input functions
 
-function MainController:player_eat()
+--- I'm not sure yet what these methods will look like. Need to investigate more
+--- into how the eating action works, and what the food items look like in code
+function MainController:player_eat(item)
+   local v = item["val"]
+   local need = self.player.needs[Player.HUNGER]
+   need.value = need.value + v
+end
+
+function MainController:player_drink(item)
 
 end
 
-function MainController:player_drink()
+function MainController:player_sleep(time)
 
 end
 
-function MainController:player_sleep()
-
-end
-
-function MainController:player_shower()
+function MainController:player_shower(time)
    
 end
 
